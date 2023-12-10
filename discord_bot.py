@@ -60,12 +60,12 @@ async def send_msg_to_llm_stream(character, warm_up=False):
             chat_history.append(message_entry)
 
     if character == "RoleplayFacilitator":
-        character_selection_msg = """If anyone, who should respond to this conversation? Mention only the person who should respond, and nothing else. Someone should only respond if they are being addressed, mentioned, responded to or have something to contribute to the conversation.
+        character_selection_msg = """If anyone, who should respond to this conversation? Mention only the person who should respond, and nothing else. Someone should only respond if they are being addressed, mentioned, responded to, or have something to contribute to the conversation.
         - Bob
         - Jahan
         - No one
         - Someone else (e.g. Alexsaro, Blueberrycookie, Bairdotr, Melissa)
-        Which of the listed options should respond? Be concise. Use max 2 words. The one who should respond is:"""
+        Which of the listed options should respond? Be concise. The one who should respond is:"""
         # Taking into account each character's personality and the above conversation, the one who should respond is:"""
         message_entry = {"role": "user", "content": character_selection_msg}
         chat_history.append(message_entry)
