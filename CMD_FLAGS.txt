@@ -1,0 +1,9 @@
+# Only used by the one-click installer.
+# Example:
+# --listen --api
+
+--api
+--model mythomax-l2-13b.ggufv3.q5_1.bin
+--nowebui
+
+
