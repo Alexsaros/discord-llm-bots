@@ -196,7 +196,7 @@ async def who_should_respond():
         if char_response.startswith("only "):
             char_response = char_response[5:].strip()
         print("chosen char: '%s'" % char_response)
-        await asyncio.sleep(0.5)    # Give the LLM some time to recover
+        await asyncio.sleep(1)    # Give the LLM some time to recover
 
         # Find the character that has been chosen
         for char in characters.keys():
