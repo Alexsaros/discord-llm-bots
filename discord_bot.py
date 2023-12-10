@@ -280,6 +280,24 @@ async def send_new_response():
 
     selected_bot = None
     character = await who_should_respond()
+    if character not in ["No one", "Bob", "Jahan"]:
+        print("INVALID CHARACTER CHOSEN: %s" % character)
+        return
+
+    if character == "Bob":
+        selected_bot = bot_bob
+    elif character == "Jahan":
+        selected_bot = bot_jahan
+
+    # Prevent the bot from sending more than one message in a row
+    last_message = None     # type: Message
+    if global_history:
+        last_message = global_history[-1]
+    if selected_bot and last_message:
+        if selected_bot.user.id == last_message.object.author.id:
+            print("Preventing %s from responding to themselves." % character)
+            character = "No one"
+
     if character == "No one":
         print("No one should respond.")
         did_not_respond_count += 1
@@ -289,13 +307,6 @@ async def send_new_response():
             last_message_sent_time_per_channel = {}
             did_not_respond_count = 0
         bot_busy = False
-        return
-    elif character == "Bob":
-        selected_bot = bot_bob
-    elif character == "Jahan":
-        selected_bot = bot_jahan
-    else:
-        print("INVALID CHARACTER CHOSEN: %s" % character)
         return
     did_not_respond_count = 0
 
@@ -327,7 +338,7 @@ async def send_new_response():
 async def handle_incoming_messages():
     global last_message_sent_time_per_channel, global_history, new_messages, messages_to_handle
     if not messages_to_handle:
-       return
+        return
     try:
         # Make sure the messages are being parsed in the order they come in
         message = messages_to_handle[0]
