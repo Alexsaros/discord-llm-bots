@@ -18,9 +18,12 @@ from dotenv import load_dotenv
 from collections import Counter
 
 
+CMD_FLAGS = "--api --nowebui --model mythomax-l2-13b.ggufv3.q5_1.bin"
+
 headers = {
     "Content-Type": "application/json"
 }
+
 
 async def send_msg_to_llm_stream(character, warm_up=False):
     if character == "RoleplayFacilitator":
@@ -185,7 +188,7 @@ async def who_should_respond():
             print("Failed determining who should respond: %s" % e)
             print("Starting RoleplayFacilitator's LLM...")
             port = 5000
-            subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings_facilitator.yaml' % port],
+            subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings_facilitator.yaml %s' % (port, CMD_FLAGS)],
                              stdin=subprocess.PIPE, shell=True)
             await asyncio.sleep(10)
             continue
@@ -228,7 +231,7 @@ async def on_ready():
 
     print("Starting RoleplayFacilitator's LLM...")
     port = 5000
-    subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings_facilitator.yaml' % port], stdin=subprocess.PIPE, shell=True)
+    subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings_facilitator.yaml %s' % (port, CMD_FLAGS)], stdin=subprocess.PIPE, shell=True)
     await asyncio.sleep(20)
 
     print("\nWarming up RoleplayFacilitator's LLM...")
@@ -239,7 +242,7 @@ async def on_ready():
 
     print("Starting Bob's LLM...")
     port = 5001
-    subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings.yaml' % port], stdin=subprocess.PIPE, shell=True)
+    subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings.yaml %s' % (port, CMD_FLAGS)], stdin=subprocess.PIPE, shell=True)
     await asyncio.sleep(20)
 
     print("\nWarming up Bob's LLM...")
@@ -451,7 +454,7 @@ async def on_ready():
     print(f'{bot_jahan.user} has connected to Discord!')
     print("Starting Jahan's LLM...")
     port = 5002
-    subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings.yaml' % port], stdin=subprocess.PIPE, shell=True)
+    subprocess.Popen(['./text-generation-webui/start_linux.sh --api-port %s --settings settings.yaml %s' % (port, CMD_FLAGS)], stdin=subprocess.PIPE, shell=True)
     await asyncio.sleep(20)
     print("\nWarming up Jahan's LLM...")
     character = "Jahan"
