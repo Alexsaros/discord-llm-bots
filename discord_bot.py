@@ -349,11 +349,13 @@ async def handle_incoming_messages():
 
         ctx = await bot_bob.get_context(message)
         if message.content.lower() == "be quiet":
+            print("Bots will now be quiet.")
             last_message_sent_time_per_channel = {}
             new_messages = []
             return
 
         if message.content.lower() == "reset":
+            print("Resetting all bot variables.")
             last_message_sent_time_per_channel = {}
             new_messages = []
             global_history = []
