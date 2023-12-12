@@ -24,7 +24,7 @@ skip_special_tokens: true
 stream: true
 name1: User
 character: Assistant
-instruction_template: test_template
+instruction_template: Alpaca
 chat-instruct_command: |-
   Continue the chat dialogue below. Write a single reply for the character "<|character|>".
 
