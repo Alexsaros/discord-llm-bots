@@ -10,4 +10,4 @@ RUN python3.8 -m pip install discord python-dotenv
 
 RUN bash ./install_text_generation.sh
 
-CMD ["python3.8", "./discord_bot.py"]
+CMD ["python3.8", "-u", "./discord_bot.py"]
