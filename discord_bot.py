@@ -4,15 +4,9 @@ import discord
 import re
 import asyncio
 import json
-import websockets
-import html
 import time
-import sys
 import traceback
-import requests
 import aiohttp
-from sseclient import SSEClient
-import httpx
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from collections import Counter
@@ -440,6 +434,7 @@ async def heartbeat():
     if not new_messages:
         return
     # Received new message to respond to
+    # TODO fix tasks carried out when previous response went to sleep
     asyncio.create_task(send_new_response())
 
 
