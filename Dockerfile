@@ -3,15 +3,13 @@ WORKDIR /app
 COPY . .
 
 RUN apt-get update && \
-    apt-get install -y python3.8 python3-pip curl && \
+    apt-get install -y python3.8 python3-pip curl dos2unix && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-RUN python3.8 -m pip install discord python-dotenv
+    rm -rf /var/lib/apt/lists/* && \
+    python3.8 -m pip install discord python-dotenv
 
-# Install dos2unix to make ./install_text_generation.sh and ./start_linux.sh runnable
-RUN apt-get update && apt-get install -y dos2unix
 COPY install_text_generation.sh /app/
-# Convert line endings to Unix style
+# Use dos2unix to make ./install_text_generation.sh and ./start_linux.sh runnable (Convert line endings to Unix style)
 RUN dos2unix /app/text-generation-webui/start_linux.sh
 RUN dos2unix /app/install_text_generation.sh
 # And run the script
