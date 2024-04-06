@@ -166,6 +166,32 @@ BOT_ID_BOB = 1143932283997401089
 BOT_ID_JAHAN = 1181674509749719040
 
 
+async def start_llm(port, facilitator=False):
+    if facilitator:
+        command = 'bash ./text-generation-webui/start_linux.sh --api-port %s --settings ../settings_facilitator.yaml %s' % (port, CMD_FLAGS)
+    else:
+        command = 'bash ./text-generation-webui/start_linux.sh --api-port %s --settings ../settings.yaml %s' % (port, CMD_FLAGS)
+    process = subprocess.Popen([command], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+    url = "http://127.0.0.1:%s" % port
+    # Monitor the output until the server has started
+    while True:
+        # Read a line from the stdout
+        line = process.stdout.readline()
+
+        # Return if there's no more output and the process has finished
+        if not line and process.poll() is not None:
+            print("Starting server has finished, but did not detect an IP!")
+            return
+
+        # Decode the line from bytes to string
+        line = line.decode('utf-8').strip()
+        print(line)
+
+        # Check if the URL has been printed
+        if url in line:
+            return
+
 
 async def who_should_respond():
     characters = {"some": "No one", "no": "No one", "alex": "No one", "blueberrycookie": "No one", "bairdotr": "No one", "melissa": "No one",
@@ -225,8 +251,7 @@ async def on_ready():
 
     print("Starting RoleplayFacilitator's LLM...")
     port = 5000
-    subprocess.Popen(['bash ./text-generation-webui/start_linux.sh --api-port %s --settings ../settings_facilitator.yaml %s' % (port, CMD_FLAGS)], stdin=subprocess.PIPE, shell=True)
-    await asyncio.sleep(20)
+    await start_llm(port, facilitator=True)
 
     print("\nWarming up RoleplayFacilitator's LLM...")
     character = "RoleplayFacilitator"
@@ -236,8 +261,7 @@ async def on_ready():
 
     print("Starting Bob's LLM...")
     port = 5001
-    subprocess.Popen(['bash ./text-generation-webui/start_linux.sh --api-port %s --settings ../settings.yaml %s' % (port, CMD_FLAGS)], stdin=subprocess.PIPE, shell=True)
-    await asyncio.sleep(20)
+    await start_llm(port)
 
     print("\nWarming up Bob's LLM...")
     character = "Bob"
@@ -462,8 +486,7 @@ async def on_ready():
     print(f'{bot_jahan.user} has connected to Discord!')
     print("Starting Jahan's LLM...")
     port = 5002
-    subprocess.Popen(['bash ./text-generation-webui/start_linux.sh --api-port %s --settings ../settings.yaml %s' % (port, CMD_FLAGS)], stdin=subprocess.PIPE, shell=True)
-    await asyncio.sleep(20)
+    await start_llm(port)
     print("\nWarming up Jahan's LLM...")
     character = "Jahan"
     async for response in send_msg_to_llm_stream(character, warm_up=True):
