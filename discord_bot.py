@@ -201,6 +201,7 @@ async def start_llm(port, facilitator=False):
 
 
 async def who_should_respond():
+    print("Deciding who should respond...")
     characters = {"some": "No one", "no": "No one", "alex": "No one", "blueberrycookie": "No one", "bairdotr": "No one", "melissa": "No one",
                   "bob": "Bob", "jahan": "Jahan"}
     chosen_characters = []
@@ -297,8 +298,9 @@ def process_message(message, preceding_msg):
     # Reset the timeout for the bot to become inactive in this channel
     last_message_sent_time_per_channel[message.channel.id] = time.time()
 
+
 async def send_new_response():
-    global bot_busy, current_response, current_message_being_send, new_messages, global_history, did_not_respond_count
+    global bot_busy, current_response, current_message_being_send, new_messages, global_history, did_not_respond_count, last_message_sent_time_per_channel
     bot_busy = True
 
     # Add the newly received messages to the history
@@ -309,6 +311,7 @@ async def send_new_response():
     character = await who_should_respond()
     if character not in ["No one", "Bob", "Jahan"]:
         print("INVALID CHARACTER CHOSEN: %s" % character)
+        bot_busy = False
         return
 
     if character == "Bob":
@@ -473,7 +476,10 @@ async def heartbeat():
 
 @bot_bob.event
 async def on_error(event, *args, **kwargs):
-    print('Encountered error')
+    print('Encountered bot error:')
+    print(event)
+    print(args)
+    print(kwargs)
     with open('err.log', 'a') as f:
         if event == 'on_message':
             f.write(f'Unhandled message: {args[0]}\n')
