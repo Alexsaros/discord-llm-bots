@@ -182,23 +182,26 @@ async def start_llm(port, facilitator=False):
     process = subprocess.Popen([command], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
     url = "http://127.0.0.1:%s" % port
-    # Monitor the output until the server has started
-    while True:
-        # Read a line from the stdout
-        line = process.stdout.readline()
+    try:
+        # Monitor the output until the server has started
+        while True:
+            # Read a line from the stdout
+            line = process.stdout.readline()
 
-        # Return if there's no more output and the process has finished
-        if not line and process.poll() is not None:
-            print("Starting server has finished, but did not detect an IP!")
-            return
+            # Return if there's no more output and the process has finished
+            if not line and process.poll() is not None:
+                print("Starting server has finished, but did not detect an IP!")
+                return
 
-        # Decode the line from bytes to string
-        line = line.decode('utf-8').strip()
-        print(line)
+            # Decode the line from bytes to string
+            line = line.decode('utf-8').strip()
+            print(line)
 
-        # Check if the URL has been printed
-        if url in line:
-            return
+            # Check if the URL has been printed
+            if url in line:
+                return
+    finally:
+        await asyncio.sleep(1)  # Wait a little for the server to become reachable
 
 
 async def who_should_respond():
