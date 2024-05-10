@@ -165,6 +165,8 @@ bot_jahan = commands.Bot(command_prefix='!', intents=intents)
 BOT_ID_BOB = 1143932283997401089
 BOT_ID_JAHAN = 1181674509749719040
 
+heartbeat_started = False
+
 
 async def start_llm(port, facilitator=False):
     if facilitator:
@@ -241,9 +243,11 @@ async def who_should_respond():
 
 @bot_bob.event
 async def on_ready():
-    global bot_busy
+    global bot_busy, heartbeat_started
     print(f'{bot_bob.user} has connected to Discord!')
-    heartbeat.start()  # Start the background task
+    if not heartbeat_started:
+        heartbeat.start()  # Start the background task
+    heartbeat_started = True
     handle_incoming_messages.start()
     # Wait until Jahan has been fully set up
     # while bot_jahan_busy:
@@ -348,7 +352,7 @@ async def send_new_response():
         except Exception as e:
             print(str(e))
     print(character + ": " + current_response + "\n")
-    
+
     bot_busy = False
 
 
