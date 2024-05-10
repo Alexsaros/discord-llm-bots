@@ -6,7 +6,7 @@ RUN apt-get update && \
     apt-get install -y python3.8 python3-pip curl dos2unix && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    python3.8 -m pip install discord python-dotenv
+    python3.8 -m pip install discord python-dotenv aiohttp
 
 COPY install_text_generation.sh /app/
 # Use dos2unix to make ./install_text_generation.sh and ./start_linux.sh runnable (Convert line endings to Unix style)
