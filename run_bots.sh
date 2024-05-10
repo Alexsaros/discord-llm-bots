@@ -9,5 +9,5 @@ if [ "$(uname -s)" == "Linux" ]; then
     docker run -v "$(pwd)"/models:/app/text-generation-webui/models discord-bots
 else
     # For Windows
-    docker run -v "/${PWD}/models:/app/text-generation-webui/models" discord-bots
+    docker run -v "/${PWD}/models:/app/text-generation-webui/models" -v "/${PWD}/characters:/app/text-generation-webui/characters" discord-bots
 fi
