@@ -170,7 +170,8 @@ bot_jahan = commands.Bot(command_prefix='!', intents=intents)
 BOT_ID_BOB = 1143932283997401089
 BOT_ID_JAHAN = 1181674509749719040
 
-heartbeat_started = False
+bob_connected = False
+jahan_connected = False
 
 
 async def start_llm(port, facilitator=False):
@@ -249,11 +250,13 @@ async def who_should_respond():
 
 @bot_bob.event
 async def on_ready():
-    global bot_busy, heartbeat_started
+    global bot_busy, bob_connected
+    if bob_connected:
+        print(f'{bot_bob.user} has connected to Discord. Again...')
+        return
+    bob_connected = True
     print(f'{bot_bob.user} has connected to Discord!')
-    if not heartbeat_started:
-        heartbeat.start()  # Start the background task
-    heartbeat_started = True
+    heartbeat.start()  # Start the background task
     handle_incoming_messages.start()
     # Wait until Jahan has been fully set up
     # while bot_jahan_busy:
@@ -497,7 +500,11 @@ async def on_message(message):
 
 @bot_jahan.event
 async def on_ready():
-    global bot_jahan_busy
+    global bot_jahan_busy, jahan_connected
+    if jahan_connected:
+        print(f'{bot_jahan.user} has connected to Discord. Again...')
+        return
+    jahan_connected = True
     print(f'{bot_jahan.user} has connected to Discord!')
     print("Starting Jahan's LLM...")
     port = 5002
