@@ -71,7 +71,7 @@ async def send_msg_to_llm_stream(character, warm_up=False):
         print("--- History: ---")
         print(chat_history)
         print("Relevant message: " + str(message_entry))
-    
+
     data = {
         "mode": "chat",
         "character": character,
@@ -80,39 +80,44 @@ async def send_msg_to_llm_stream(character, warm_up=False):
     }
 
     response = ""
-    while not response:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(stream_url, headers=headers, json=data, timeout=None) as sess_response:
-                async for chunk, _ in sess_response.content.iter_chunks():
-                    chunk = chunk.decode('utf-8')
-                    if chunk.startswith("data: "):
-                        chunk = chunk[6:]
-                    chunk = chunk.strip()
-                    if not chunk:
-                        continue
-                    if chunk[:4] == "ping" or chunk[:6] == ": ping":
-                        print(chunk)
-                        continue
-                    payload = json.loads(chunk)
-                    response += payload['choices'][0]['message']['content']
+    try:
+        while not response:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(stream_url, headers=headers, json=data, timeout=None) as sess_response:
+                    async for chunk, _ in sess_response.content.iter_chunks():
+                        chunk = chunk.decode('utf-8')
+                        if chunk.startswith("data: "):
+                            chunk = chunk[6:]
+                        chunk = chunk.strip()
+                        if not chunk:
+                            continue
+                        if chunk[:4] == "ping" or chunk[:6] == ": ping":
+                            print(chunk)
+                            continue
+                        payload = json.loads(chunk)
+                        response += payload['choices'][0]['message']['content']
 
-                    if character == "RoleplayFacilitator" and len(response) >= 10:
-                        yield response
-                        return
-
-                    # Make sure the bot does not start talking as another user/character
-                    for stopping_string in STOPPING_STRINGS:
-                        if stopping_string in response:
-                            print("Stopped stopping_string '%s' from being printed in: '%s' (%s)" % (stopping_string, response, stopping_string in response))
-                            response = response.split(stopping_string)[0]
-                            response = response.strip('\n')
-                            print("new response: '%s'" % response)
+                        if character == "RoleplayFacilitator" and len(response) >= 10:
                             yield response
                             return
-                    yield response
 
-        if not response:
-            await asyncio.sleep(0.5)
+                        # Make sure the bot does not start talking as another user/character
+                        for stopping_string in STOPPING_STRINGS:
+                            if stopping_string in response:
+                                print("Stopped stopping_string '%s' from being printed in: '%s' (%s)" % (stopping_string, response, stopping_string in response))
+                                response = response.split(stopping_string)[0]
+                                response = response.strip('\n')
+                                print("new response: '%s'" % response)
+                                yield response
+                                return
+                        yield response
+
+            if not response:
+                await asyncio.sleep(0.5)
+    except Exception as e:
+        print("Encountered an exception while streaming response!")
+        print(e)
+        print(traceback.format_exc(e))
 
 
 class Message:
@@ -121,7 +126,7 @@ class Message:
         if not message_object:
             raise Exception("No message object passed to init of Message.")
         self.update_self(message_object)
-    
+
     def update_self(self, message_object):
         self.object = message_object
         # Uses the saved Discord message object to update this object's attributes
@@ -129,7 +134,7 @@ class Message:
         self.author = self.object.author.global_name if self.object.author.global_name else self.object.author.name
         self.formatted_msg = self.author + ": " + self.text
         self.id = self.object.id
-        
+
     def __str__(self):
         return str(self.id) + ": " + self.formatted_msg
 
